@@ -3,33 +3,19 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <netdb.h>
+#include <stdbool.h>
+
+void showMenu(int clientSocket);
 void insertEntry(int clientSocket);
-void showMenu();
+void searchID(int clientSocket);
+void deleteID(int clientSocket);
+void display(int clientSocket);
 
 void connectSocket(int clientSocket){
-	uint32_t num, cnum; // communication starts from here
-	char msg[30];
-	showMenu();
-	
-	printf( "Enter choice: ");
-	scanf("%d", &num);
-	cnum = htonl(num); // "host to network long" convert values from host byte order to network byte order
-	send(clientSocket, &cnum, sizeof(cnum), 0);
-	
-	recv(clientSocket, msg, sizeof(msg), 0); // receive a reply message from the server
-	printf("%s\n", msg);
-	
-	if(num == 1){
-		insertEntry(clientSocket);
-	}
-	uint32_t searchID, csearchID; // communication starts from here
-	printf( "Enter ID for searching: ");
-	scanf("%d", &searchID);
-	csearchID = htonl(searchID); // "host to network long" convert values from host byte order to network byte order
-	send(clientSocket, &csearchID, sizeof(csearchID), 0);
+	showMenu(clientSocket);
 }
 
-void showMenu(){
+void showMenu(int clientSocket){
 	
 	printf( "-------------------------\n");
 	printf( "- Student Database Menu -\n");
@@ -41,6 +27,38 @@ void showMenu(){
 	printf( "5. Delete Entry\n");
 	printf( "6. Exit\n");
 	printf( "-------------------------\n");
+	printf( "Enter choice: ");
+	
+	uint32_t num, cnum; // communication starts from here
+	char msg[30];
+	scanf("%d", &num);
+	cnum = htonl(num); 
+	send(clientSocket, &cnum, sizeof(cnum), 0);
+	
+	recv(clientSocket, msg, sizeof(msg), 0);
+	printf("%s\n", msg);
+	
+	if(num == 1){
+		insertEntry(clientSocket);
+	}
+	else if (num == 2){
+		searchID(clientSocket);
+	}
+	else if (num == 4){
+		display(clientSocket);
+	}
+	else if (num == 5){
+		deleteID(clientSocket);
+	}
+	else if (num == 6){
+		close(clientSocket);
+	}
+	else
+	{
+		printf("Input not valid. Please enter choice again...\n");
+		showMenu(clientSocket);
+	}
+	
 }
 
 void insertEntry(int clientSocket){
@@ -54,7 +72,35 @@ void insertEntry(int clientSocket){
 	printf( "Enter student name: ");
 	scanf("%s", &fName);
 	send(clientSocket, fName, sizeof(fName), 0);
+	
+	showMenu(clientSocket);
 }
+
+void searchID(int clientSocket){
+	uint32_t searchID, csearchID;
+	printf( "Enter ID for searching: ");
+	scanf("%d", &searchID);
+	csearchID = htonl(searchID);
+	send(clientSocket, &csearchID, sizeof(csearchID), 0);
+	
+	showMenu(clientSocket);
+}
+
+void deleteID(int clientSocket){
+	uint32_t deleteID, cdeleteID;
+	printf( "Enter ID for deletion: ");
+	scanf("%d", &deleteID);
+	cdeleteID = htonl(deleteID);
+	send(clientSocket, &cdeleteID, sizeof(cdeleteID), 0);
+	
+	showMenu(clientSocket);
+}
+
+void display(int clientSocket){
+	printf("Displaying database...\n");
+	showMenu(clientSocket);
+}
+
 int main(int argc, char **argv){
   int clientSocket;
   char buffer[1024];
@@ -92,8 +138,7 @@ int main(int argc, char **argv){
   /*---- Connect the socket to the server using the address struct ----*/
   addr_size = sizeof serverAddr;
   connect(clientSocket, (struct sockaddr *) &serverAddr, addr_size);
- connectSocket(clientSocket);
-  close(clientSocket);
+ 	connectSocket(clientSocket);
 
   return 0;
 }
