@@ -3,22 +3,57 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <netdb.h>
+void insertEntry(int clientSocket);
+void showMenu();
+
 void connectSocket(int clientSocket){
 	uint32_t num, cnum; // communication starts from here
 	char msg[30];
+	showMenu();
 	
-	printf( "Enter student ID: ");
+	printf( "Enter choice: ");
 	scanf("%d", &num);
 	cnum = htonl(num); // "host to network long" convert values from host byte order to network byte order
 	send(clientSocket, &cnum, sizeof(cnum), 0);
 	
+	recv(clientSocket, msg, sizeof(msg), 0); // receive a reply message from the server
+	printf("%s\n", msg);
+	
+	if(num == 1){
+		insertEntry(clientSocket);
+	}
+	uint32_t searchID, csearchID; // communication starts from here
+	printf( "Enter ID for searching: ");
+	scanf("%d", &searchID);
+	csearchID = htonl(searchID); // "host to network long" convert values from host byte order to network byte order
+	send(clientSocket, &csearchID, sizeof(csearchID), 0);
+}
+
+void showMenu(){
+	
+	printf( "-------------------------\n");
+	printf( "- Student Database Menu -\n");
+	printf( "-------------------------\n");
+	printf( "1. Add Entry\n");
+	printf( "2. Search with ID\n");
+	printf( "3. Search with Score\n");
+	printf( "4. Display Database\n");
+	printf( "5. Delete Entry\n");
+	printf( "6. Exit\n");
+	printf( "-------------------------\n");
+}
+
+void insertEntry(int clientSocket){
+	uint32_t numID, cID; // communication starts from here
+	char fName[30];
+	printf( "Enter student ID: ");
+	scanf("%d", &numID);
+	cID = htonl(numID); // "host to network long" convert values from host byte order to network byte order
+	send(clientSocket, &cID, sizeof(cID), 0);
+	
 	printf( "Enter student name: ");
-	scanf("%s", &msg);
-	send(clientSocket, msg, sizeof(msg), 0);
-	
-	/*recv(clientSocket, msg, sizeof(msg), 0); // receive a reply message from the server
-	printf("%s\n", msg);*/
-	
+	scanf("%s", &fName);
+	send(clientSocket, fName, sizeof(fName), 0);
 }
 int main(int argc, char **argv){
   int clientSocket;

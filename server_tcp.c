@@ -14,8 +14,74 @@ void connectSocket(int newSocket){ 	// communication starts from here
 	char msg[30];
 	// receive an integer from the client
 	recv(newSocket, &num, sizeof(num), 0);
-	printf("# received: %d\n",ntohl(num));   
+	printf("Choice received: %d\n",ntohl(num));   
 	
+	if (ntohl(num) == 1)	strcpy(msg, "Inserting entry...\n");
+	else if (ntohl(num) == 2) 	strcpy(msg, "Searching by ID...\n");
+	else if (ntohl(num) == 3) 	strcpy(msg, "Searching by score...\n");
+	else if (ntohl(num) == 4) 	strcpy(msg, "Displaying student database...\n");
+	else if (ntohl(num) == 5) 	strcpy(msg, "Deleteing entry...\n");
+	else 	strcpy(msg, "Quitting... \n");
+	
+	send(newSocket, msg, sizeof(msg), 0);
+	
+	struct student stuData[20];
+	
+	int i = 0;
+	strcpy(stuData[0].fName, "Michelle");	
+	stuData[0].id = 123;
+	i++;
+	
+	strcpy(stuData[1].fName, "Mitchel");
+	stuData[1].id = 133;
+	i++;
+	
+	strcpy(stuData[2].fName, "Michael");
+	stuData[2].id = 143;
+	i++;
+	
+	if (ntohl(num) == 1){
+		uint32_t numID;
+		char fName[30];
+		
+		recv(newSocket, &numID, sizeof(numID), 0);
+		recv(newSocket, fName, sizeof(fName), 0);
+		
+		stuData[i].id = ntohl(numID); // if not set ntohl, num = address
+		strcpy(stuData[i].fName, fName);
+		
+		i++;
+		/*
+		// keep in check
+		printf( "-------------------------\n");
+		printf("ID: %d \n", stuData[i].id);
+		printf("Name: %s \n", stuData[i].fName);
+		printf("Current size of Database:: %d \n", i+1);
+		printf( "-------------------------\n");*/
+	}
+	
+	uint32_t searchID;
+	recv(newSocket, &searchID, sizeof(searchID), 0);
+	printf("SearchID received: %d\n",ntohl(searchID)); 
+	
+	int j; // SEARCH ID
+	for (j = 0; j < i; j++){
+		if (stuData[j].id == ntohl(searchID))
+		{
+			printf("ID found with name: %s \n", stuData[j].fName);
+			break;
+		}
+	}
+	  
+	
+	/*int j; // DISPLAY
+	for (j = 0; j < i; j++){
+		printf("%d .", j);
+		printf("Name: %s \t", stuData[j].fName);
+		printf("ID: %d \t", stuData[j].id);
+		printf("\n");
+	}*/
+	/*
 	recv(newSocket, msg, sizeof(msg), 0);
 	printf("%s\n", msg);
 	
@@ -25,7 +91,7 @@ void connectSocket(int newSocket){ 	// communication starts from here
 	
 	printf("ID: %d ", stuData[0].id);
 	printf("Name: %s ", stuData[0].fName);
-	
+	*/
 	/*	// send a reply message to the client
 	strcpy(msg, "ID received");
 	send(newSocket, msg, sizeof(msg), 0);*/
