@@ -10,12 +10,7 @@ struct student {
    char fName[20];
 };
 
-void insertEntry(int newSocket, struct student stu);
-void searchID(int newSocket, struct student stu);
-void deleteID(int newSocket, struct student stu);
-void display(int newSocket, struct student stu);
-
-void connectSocket(int newSocket){
+void connectSocket(int newSocket){ 	// communication starts from here
 	uint32_t num;
 	char msg[30];
 	
@@ -27,7 +22,7 @@ void connectSocket(int newSocket){
 	else if (ntohl(num) == 3) 	strcpy(msg, "Searching by score...\n");
 	else if (ntohl(num) == 4) 	strcpy(msg, "Displaying student database...\n");
 	else if (ntohl(num) == 5) 	strcpy(msg, "Deleteing entry...\n");
-	else if (ntohl(num) == 6)	strcpy(msg, "Quitting... \n");
+	else 	strcpy(msg, "Quitting... \n");
 	
 	send(newSocket, msg, sizeof(msg), 0);
 	
@@ -45,56 +40,74 @@ void connectSocket(int newSocket){
 	i++;
 	
 	if (ntohl(num) == 1){
-		insertEntry(newSocket, stuData);
+		uint32_t numID;
+		char fName[30];
+		
+		recv(newSocket, &numID, sizeof(numID), 0);
+		recv(newSocket, fName, sizeof(fName), 0);
+		
+		stuData[i].id = ntohl(numID); // if not set ntohl, num = address
+		strcpy(stuData[i].fName, fName);
+		
+		char msgInsert[30];
+		
+		strcpy(msgInsert, "Student registered.");
+		send(newSocket, msgInsert, sizeof(msgInsert), 0);
+		
 		i++;
+		
+		int j;
+		for (j = 0; j < i; j++){
+			printf("%d .", (j+1));
+			printf("Name: %s \t", stuData[j].fName);
+			printf("ID: %d \t", stuData[j].id);
+			printf("\n");
+		}
+		
 	}	
 	else if (ntohl(num) == 2){
-		searchID(newSocket, stuData);
+		uint32_t searchID;
+		recv(newSocket, &searchID, sizeof(searchID), 0);
+		printf("SearchID received: %d\n",ntohl(searchID)); 
+		bool foundID = false;
+		
+		char msgSearch[50];
+		int j; // SEARCH ID
+		for (j = 0; j < i; j++){
+			if (stuData[j].id == ntohl(searchID))
+			{
+				foundID = true;
+				break;
+			}
+		}
+		if (foundID == true){
+			strcpy(msgSearch, stuData[j].fName);
+			strcat(msgSearch, " is found with the matching ID.\n");
+		}
+		else{
+			strcpy(msgSearch, "ID not found in database.\n");
+		}
+		
+		send(newSocket, msgSearch, sizeof(msgSearch), 0);
+			
 	}
-	else if(ntohl(num) == 4, stuData){
-		display(newSocket, stuData);
-	}
-	else if (ntohl(num) == 5){
-		deleteEntry(newSocket, stuData);
-	}
+	else if(ntohl(num) == 4){ // DISPLAY
+		int j;
+		
+		uint32_t size, cSize;
+		size = i; // size = 3 printf("%d \n", size);
+		cSize = htonl(size); 
+		send(newSocket, &cSize, sizeof(cSize), 0);
 	
-}
-
-void insertEntry(int newSocket, struct student stu){
-	uint32_t numID;
-	char fName[30];
-	
-	recv(newSocket, &numID, sizeof(numID), 0);
-	recv(newSocket, fName, sizeof(fName), 0);
-	
-	stuData[i].id = ntohl(numID); // if not set ntohl, num = address
-	strcpy(stuData[i].fName, fName);
-
-}
-
-void searchID(int newSocket, struct student stu){
-	uint32_t searchID;
-	recv(newSocket, &searchID, sizeof(searchID), 0);
-	printf("SearchID received: %d\n",ntohl(searchID)); 
-	bool foundID = false;
-	
-	int j; // SEARCH ID
-	for (j = 0; j < i; j++){
-		if (stuData[j].id == ntohl(searchID))
-		{
-			foundID = true;
-			break;
+		for (j = 0; j < i; j++){
+			printf("%d .", j);
+			printf("Name: %s \t", stuData[j].fName);
+			printf("ID: %d \t", stuData[j].id);
+			printf("\n");
 		}
 	}
-	if (foundID == true){
-		printf("ID found with name: %s \n", stuData[j].fName);
-	}
-	else
-		printf("ID not found in database.\n");
-}
-
-void deleteID(int newSocket, struct student stu){
-	uint32_t deleteID;
+	else if (ntohl(num) == 5){
+		uint32_t deleteID;
 		recv(newSocket, &deleteID, sizeof(deleteID), 0);
 		printf("SearchID received: %d\n",ntohl(deleteID)); 
 		bool foundID = false; // search ID for deletion
@@ -120,16 +133,10 @@ void deleteID(int newSocket, struct student stu){
 		}
 		else
 			printf("ID not found in database.\n");
-}
-void display(int newSocket, struct student stu){
-	int j;
-	for (j = 0; j < i; j++){
-		printf("%d .", j);
-		printf("Name: %s \t", stuData[j].fName);
-		printf("ID: %d \t", stuData[j].id);
-		printf("\n");
 	}
+	
 }
+
 int main(int argc, char **argv){
   int welcomeSocket, newSocket;
   char buffer[1024];
@@ -173,6 +180,7 @@ int main(int argc, char **argv){
   newSocket = accept(welcomeSocket, (struct sockaddr *) &serverStorage, &addr_size);
 	connectSocket(newSocket);
 
-	close(welcomeSocket);
+  close(newSocket);
+  close(welcomeSocket);
   return 0;
 }

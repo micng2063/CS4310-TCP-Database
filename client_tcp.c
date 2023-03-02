@@ -39,19 +39,48 @@ void showMenu(int clientSocket){
 	printf("%s\n", msg);
 	
 	if(num == 1){
-		insertEntry(clientSocket);
+		uint32_t numID, cID; // communication starts from here
+		char fName[30];
+		printf( "Enter student ID: ");
+		scanf("%d", &numID);
+		cID = htonl(numID); // "host to network long" convert values from host byte order to network byte order
+		send(clientSocket, &cID, sizeof(cID), 0);
+		
+		printf( "Enter student name: ");
+		scanf("%s", &fName);
+		send(clientSocket, fName, sizeof(fName), 0);
+			
+		char msgInsert[30];
+		recv(clientSocket, msgInsert, sizeof(msgInsert), 0);
+		printf("%s\n", msgInsert);
 	}
 	else if (num == 2){
-		searchID(clientSocket);
+		uint32_t searchID, csearchID;
+		printf( "Enter ID for searching: ");
+		scanf("%d", &searchID);
+		csearchID = htonl(searchID);
+		send(clientSocket, &csearchID, sizeof(csearchID), 0);
+		
+		char msgSearch[50];
+		recv(clientSocket, msgSearch, sizeof(msgSearch), 0);
+		printf("%s\n", msgSearch);
 	}
 	else if (num == 4){
-		display(clientSocket);
+		uint32_t size;
+		recv(clientSocket, &size, sizeof(size), 0);
+		printf("Size received: %d\n",ntohl(size));   
+		
+		int j;
+		for (j = 0; j < ntohl(size); j++){
+			printf("This is a line.\n");
+		}
 	}
 	else if (num == 5){
-		deleteID(clientSocket);
-	}
-	else if (num == 6){
-		close(clientSocket);
+		uint32_t deleteID, cdeleteID;
+		printf( "Enter ID for deletion: ");
+		scanf("%d", &deleteID);
+		cdeleteID = htonl(deleteID);
+		send(clientSocket, &cdeleteID, sizeof(cdeleteID), 0);
 	}
 	else
 	{
@@ -72,8 +101,10 @@ void insertEntry(int clientSocket){
 	printf( "Enter student name: ");
 	scanf("%s", &fName);
 	send(clientSocket, fName, sizeof(fName), 0);
-	
-	showMenu(clientSocket);
+		
+	char msgInsert[30];
+	recv(clientSocket, msgInsert, sizeof(msgInsert), 0);
+	printf("%s\n", msgInsert);
 }
 
 void searchID(int clientSocket){
@@ -83,7 +114,6 @@ void searchID(int clientSocket){
 	csearchID = htonl(searchID);
 	send(clientSocket, &csearchID, sizeof(csearchID), 0);
 	
-	showMenu(clientSocket);
 }
 
 void deleteID(int clientSocket){
@@ -92,13 +122,10 @@ void deleteID(int clientSocket){
 	scanf("%d", &deleteID);
 	cdeleteID = htonl(deleteID);
 	send(clientSocket, &cdeleteID, sizeof(cdeleteID), 0);
-	
-	showMenu(clientSocket);
 }
 
 void display(int clientSocket){
 	printf("Displaying database...\n");
-	showMenu(clientSocket);
 }
 
 int main(int argc, char **argv){
@@ -140,6 +167,7 @@ int main(int argc, char **argv){
   connect(clientSocket, (struct sockaddr *) &serverAddr, addr_size);
  	connectSocket(clientSocket);
 
+		close(clientSocket);
   return 0;
 }
 
