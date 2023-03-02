@@ -1,4 +1,3 @@
-// testing for commit repo
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -8,22 +7,13 @@
 void connectSocket(int newSocket){ 	// communication starts from here
 	uint32_t num;
 	char msg[30];
-
 	// receive an integer from the client
 	recv(newSocket, &num, sizeof(num), 0);
-	printf("Integer received: %d\n",ntohl(num));   
+	printf("Choice received: %d\n",ntohl(num));   
 	
 	// send a reply message to the client
-	strcpy(msg, "Integer received");
+	strcpy(msg, "Choice received");
 	send(newSocket, msg, sizeof(msg), 0);
-	
-	char msg2[30];
-	if ((num) = 123)
-		strcpy(msg2, "Michelle");
-	else
-		strcpy(msg2, "No");
-	
-	send(newSocket, msg2, sizeof(msg2), 0);
 }
 
 int main(int argc, char **argv){
