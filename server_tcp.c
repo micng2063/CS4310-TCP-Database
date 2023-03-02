@@ -4,16 +4,32 @@
 #include <netinet/in.h>
 #include <string.h>
 
+struct student {
+   int id;
+   char fName[20];
+};
+
 void connectSocket(int newSocket){ 	// communication starts from here
 	uint32_t num;
 	char msg[30];
 	// receive an integer from the client
 	recv(newSocket, &num, sizeof(num), 0);
-	printf("Choice received: %d\n",ntohl(num));   
+	printf("# received: %d\n",ntohl(num));   
 	
-	// send a reply message to the client
-	strcpy(msg, "Choice received");
-	send(newSocket, msg, sizeof(msg), 0);
+	recv(newSocket, msg, sizeof(msg), 0);
+	printf("%s\n", msg);
+	
+	struct student stuData[20];
+	stuData[0].id = ntohl(num); // if not set ntohl, num = address
+	strcpy(stuData[0].fName, msg);
+	
+	printf("ID: %d ", stuData[0].id);
+	printf("Name: %s ", stuData[0].fName);
+	
+	/*	// send a reply message to the client
+	strcpy(msg, "ID received");
+	send(newSocket, msg, sizeof(msg), 0);*/
+	
 }
 
 int main(int argc, char **argv){
@@ -58,6 +74,7 @@ int main(int argc, char **argv){
   addr_size = sizeof serverStorage;
   newSocket = accept(welcomeSocket, (struct sockaddr *) &serverStorage, &addr_size);
 	connectSocket(newSocket);
+  
   close(newSocket);
   close(welcomeSocket);
 

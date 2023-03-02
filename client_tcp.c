@@ -6,24 +6,19 @@
 void connectSocket(int clientSocket){
 	uint32_t num, cnum; // communication starts from here
 	char msg[30];
-
-	printf( "-------------------------\n");
-	printf( "- Student Database Menu -\n");
-	printf( "-------------------------\n");
-	printf( "1. Add Entry\n");
-	printf( "2. Search with ID\n");
-	printf( "3. Search with Score\n");
-	printf( "4. Display Database\n");
-	printf( "5. Delete Entry\n");
-	printf( "6. Exit\n");
-	printf( "-------------------------\n");
 	
-	printf( "Enter your choice:");
+	printf( "Enter student ID: ");
 	scanf("%d", &num);
-	/* htonl stands for "host to network long" and is a function used in networking 
-	applications to convert values from host byte order to network byte order.*/
-	cnum = htonl(num);
+	cnum = htonl(num); // "host to network long" convert values from host byte order to network byte order
 	send(clientSocket, &cnum, sizeof(cnum), 0);
+	
+	printf( "Enter student name: ");
+	scanf("%s", &msg);
+	send(clientSocket, msg, sizeof(msg), 0);
+	
+	/*recv(clientSocket, msg, sizeof(msg), 0); // receive a reply message from the server
+	printf("%s\n", msg);*/
+	
 }
 int main(int argc, char **argv){
   int clientSocket;
