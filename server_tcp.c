@@ -100,10 +100,15 @@ void connectSocket(int newSocket){ 	// communication starts from here
 		send(newSocket, &cSize, sizeof(cSize), 0);
 	
 		for (j = 0; j < i; j++){
-			printf("%d .", j);
-			printf("Name: %s \t", stuData[j].fName);
-			printf("ID: %d \t", stuData[j].id);
-			printf("\n");
+			uint32_t id, cID;
+			char msgfName[50];
+			
+			strcpy(msgfName, stuData[j].fName);
+			id = stuData[j].id;
+			cID = htonl(id); 
+			
+			send(newSocket, &cID, sizeof(cID), 0);
+			send(newSocket, msgfName, sizeof(msgfName), 0);
 		}
 	}
 	else if (ntohl(num) == 5){

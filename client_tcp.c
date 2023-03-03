@@ -68,12 +68,21 @@ void showMenu(int clientSocket){
 	else if (num == 4){
 		uint32_t size;
 		recv(clientSocket, &size, sizeof(size), 0);
-		printf("Size received: %d\n",ntohl(size));   
-		
+		//printf("Size received: %d\n",ntohl(size));   
+		printf( "-------------------------\n");
 		int j;
 		for (j = 0; j < ntohl(size); j++){
-			printf("This is a line.\n");
+			uint32_t id;
+			char msgfName[50];
+			int order = j + 1;
+			
+			recv(clientSocket, &id, sizeof(id), 0);
+			recv(clientSocket, msgfName, sizeof(msgfName), 0);
+			printf("%d .", order);
+			printf("%s \t", msgfName);
+			printf(" - %d\n",ntohl(id));   
 		}
+		printf( "-------------------------\n");
 	}
 	else if (num == 5){
 		uint32_t deleteID, cdeleteID;
