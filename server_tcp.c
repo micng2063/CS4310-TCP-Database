@@ -38,107 +38,112 @@ void connectSocket(int newSocket){ 	// communication starts from here
 	strcpy(stuData[2].fName, "Michael");
 	stuData[2].id = 143;
 	i++;
-	
-	if (ntohl(num) == 1){
-		uint32_t numID;
-		char fName[30];
-		
-		recv(newSocket, &numID, sizeof(numID), 0);
-		recv(newSocket, fName, sizeof(fName), 0);
-		
-		stuData[i].id = ntohl(numID); // if not set ntohl, num = address
-		strcpy(stuData[i].fName, fName);
-		
-		char msgInsert[30];
-		
-		strcpy(msgInsert, "Student registered.");
-		send(newSocket, msgInsert, sizeof(msgInsert), 0);
-		
-		i++;
-		
-		int j;
-		for (j = 0; j < i; j++){
-			printf("%d .", (j+1));
-			printf("Name: %s \t", stuData[j].fName);
-			printf("ID: %d \t", stuData[j].id);
-			printf("\n");
-		}
-		
-	}	
-	else if (ntohl(num) == 2){
-		uint32_t searchID;
-		recv(newSocket, &searchID, sizeof(searchID), 0);
-		printf("SearchID received: %d\n",ntohl(searchID)); 
-		bool foundID = false;
-		
-		char msgSearch[50];
-		int j; // SEARCH ID
-		for (j = 0; j < i; j++){
-			if (stuData[j].id == ntohl(searchID))
-			{
-				foundID = true;
-				break;
+	while (ntohl(num) != 6){
+		if (ntohl(num) == 1){
+			uint32_t numID;
+			char fName[30];
+			
+			recv(newSocket, &numID, sizeof(numID), 0);
+			recv(newSocket, fName, sizeof(fName), 0);
+			
+			stuData[i].id = ntohl(numID); // if not set ntohl, num = address
+			strcpy(stuData[i].fName, fName);
+			
+			char msgInsert[30];
+			
+			strcpy(msgInsert, "Student registered.");
+			send(newSocket, msgInsert, sizeof(msgInsert), 0);
+			
+			i++;
+			
+			int j;
+			for (j = 0; j < i; j++){
+				printf("%d .", (j+1));
+				printf("Name: %s \t", stuData[j].fName);
+				printf("ID: %d \t", stuData[j].id);
+				printf("\n");
 			}
-		}
-		if (foundID == true){
-			strcpy(msgSearch, stuData[j].fName);
-			strcat(msgSearch, " is found with the matching ID.\n");
-		}
-		else{
-			strcpy(msgSearch, "ID not found in database.\n");
-		}
-		
-		send(newSocket, msgSearch, sizeof(msgSearch), 0);
 			
-	}
-	else if(ntohl(num) == 4){ // DISPLAY
-		int j;
-		
-		uint32_t size, cSize;
-		size = i; // size = 3 printf("%d \n", size);
-		cSize = htonl(size); 
-		send(newSocket, &cSize, sizeof(cSize), 0);
-	
-		for (j = 0; j < i; j++){
-			uint32_t id, cID;
-			char msgfName[50];
+		}	
+		else if (ntohl(num) == 2){
+			uint32_t searchID;
+			recv(newSocket, &searchID, sizeof(searchID), 0);
+			printf("SearchID received: %d\n",ntohl(searchID)); 
+			bool foundID = false;
 			
-			strcpy(msgfName, stuData[j].fName);
-			id = stuData[j].id;
-			cID = htonl(id); 
-			
-			send(newSocket, &cID, sizeof(cID), 0);
-			send(newSocket, msgfName, sizeof(msgfName), 0);
-		}
-	}
-	else if (ntohl(num) == 5){
-		uint32_t deleteID;
-		recv(newSocket, &deleteID, sizeof(deleteID), 0);
-		printf("SearchID received: %d\n",ntohl(deleteID)); 
-		bool foundID = false; // search ID for deletion
-		
-		int j; // SEARCH ID
-		int k;
-		for (j = 0; j < i; j++){
-			if (stuData[j].id == ntohl(deleteID))
-			{
-				foundID = true;
-				break;
+			char msgSearch[50];
+			int j; // SEARCH ID
+			for (j = 0; j < i; j++){
+				if (stuData[j].id == ntohl(searchID))
+				{
+					foundID = true;
+					break;
+				}
 			}
-		}
-		
-		if (foundID == true){
-			for (k = j; k < i; k++){
-				char fNameT[30];
+			if (foundID == true){
+				strcpy(msgSearch, stuData[j].fName);
+				strcat(msgSearch, " is found with the matching ID.\n");
+			}
+			else{
+				strcpy(msgSearch, "ID not found in database.\n");
+			}
+			
+			send(newSocket, msgSearch, sizeof(msgSearch), 0);
 				
-				stuData[k].id = stuData[k+1].id;
-				strcpy(stuData[k].fName, stuData[k+1].fName );
-			}
-			i--;
 		}
-		else
-			printf("ID not found in database.\n");
+		else if(ntohl(num) == 4){ // DISPLAY
+			int j;
+			
+			uint32_t size, cSize;
+			size = i; // size = 3 printf("%d \n", size);
+			cSize = htonl(size); 
+			send(newSocket, &cSize, sizeof(cSize), 0);
+		
+			for (j = 0; j < i; j++){
+				uint32_t id, cID;
+				char msgfName[50];
+				
+				strcpy(msgfName, stuData[j].fName);
+				id = stuData[j].id;
+				cID = htonl(id); 
+				
+				send(newSocket, &cID, sizeof(cID), 0);
+				send(newSocket, msgfName, sizeof(msgfName), 0);
+			}
+		}
+		else if (ntohl(num) == 5){
+			uint32_t deleteID;
+			recv(newSocket, &deleteID, sizeof(deleteID), 0);
+			printf("SearchID received: %d\n",ntohl(deleteID)); 
+			bool foundID = false; // search ID for deletion
+			
+			int j; // SEARCH ID
+			int k;
+			for (j = 0; j < i; j++){
+				if (stuData[j].id == ntohl(deleteID))
+				{
+					foundID = true;
+					break;
+				}
+			}
+			
+			if (foundID == true){
+				for (k = j; k < i; k++){
+					char fNameT[30];
+					
+					stuData[k].id = stuData[k+1].id;
+					strcpy(stuData[k].fName, stuData[k+1].fName );
+				}
+				i--;
+			}
+			else
+				printf("ID not found in database.\n");
+		}
+		
+		recv(newSocket, &num, sizeof(num), 0);
+		printf("Choice received: %d\n",ntohl(num));
 	}
+		
 	
 }
 

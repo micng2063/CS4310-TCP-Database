@@ -14,9 +14,7 @@ void display(int clientSocket);
 void connectSocket(int clientSocket){
 	showMenu(clientSocket);
 }
-
-void showMenu(int clientSocket){
-	
+void printMenu(){
 	printf( "-------------------------\n");
 	printf( "- Student Database Menu -\n");
 	printf( "-------------------------\n");
@@ -28,6 +26,10 @@ void showMenu(int clientSocket){
 	printf( "6. Exit\n");
 	printf( "-------------------------\n");
 	printf( "Enter choice: ");
+}
+void showMenu(int clientSocket){
+	
+	printMenu();
 	
 	uint32_t num, cnum; // communication starts from here
 	char msg[30];
@@ -37,64 +39,76 @@ void showMenu(int clientSocket){
 	
 	recv(clientSocket, msg, sizeof(msg), 0);
 	printf("%s\n", msg);
-	
-	if(num == 1){
-		uint32_t numID, cID; // communication starts from here
-		char fName[30];
-		printf( "Enter student ID: ");
-		scanf("%d", &numID);
-		cID = htonl(numID); // "host to network long" convert values from host byte order to network byte order
-		send(clientSocket, &cID, sizeof(cID), 0);
-		
-		printf( "Enter student name: ");
-		scanf("%s", &fName);
-		send(clientSocket, fName, sizeof(fName), 0);
+	while (num != 6){
+		if(num == 1){
+			uint32_t numID, cID; // communication starts from here
+			char fName[30];
+			printf( "Enter student ID: ");
+			scanf("%d", &numID);
+			cID = htonl(numID); // "host to network long" convert values from host byte order to network byte order
+			send(clientSocket, &cID, sizeof(cID), 0);
 			
-		char msgInsert[30];
-		recv(clientSocket, msgInsert, sizeof(msgInsert), 0);
-		printf("%s\n", msgInsert);
-	}
-	else if (num == 2){
-		uint32_t searchID, csearchID;
-		printf( "Enter ID for searching: ");
-		scanf("%d", &searchID);
-		csearchID = htonl(searchID);
-		send(clientSocket, &csearchID, sizeof(csearchID), 0);
-		
-		char msgSearch[50];
-		recv(clientSocket, msgSearch, sizeof(msgSearch), 0);
-		printf("%s\n", msgSearch);
-	}
-	else if (num == 4){
-		uint32_t size;
-		recv(clientSocket, &size, sizeof(size), 0);
-		//printf("Size received: %d\n",ntohl(size));   
-		printf( "-------------------------\n");
-		int j;
-		for (j = 0; j < ntohl(size); j++){
-			uint32_t id;
-			char msgfName[50];
-			int order = j + 1;
+			printf( "Enter student name: ");
+			scanf("%s", &fName);
+			send(clientSocket, fName, sizeof(fName), 0);
+				
+			char msgInsert[30];
+			recv(clientSocket, msgInsert, sizeof(msgInsert), 0);
+			printf("%s\n", msgInsert);
+			printf( "-------------------------\n");
+			printMenu();
+		}
+		else if (num == 2){
+			uint32_t searchID, csearchID;
+			printf( "Enter ID for searching: ");
+			scanf("%d", &searchID);
+			csearchID = htonl(searchID);
+			send(clientSocket, &csearchID, sizeof(csearchID), 0);
 			
-			recv(clientSocket, &id, sizeof(id), 0);
-			recv(clientSocket, msgfName, sizeof(msgfName), 0);
-			printf("%d .", order);
-			printf("%s \t", msgfName);
-			printf(" - %d\n",ntohl(id));   
+			char msgSearch[50];
+			recv(clientSocket, msgSearch, sizeof(msgSearch), 0);
+			printf("%s\n", msgSearch);
+			
+			printMenu();
+		}
+		else if (num == 4){
+			uint32_t size;
+			recv(clientSocket, &size, sizeof(size), 0);
+			//printf("Size received: %d\n",ntohl(size));   
+			printf( "-------------------------\n");
+			int j;
+			for (j = 0; j < ntohl(size); j++){
+				uint32_t id;
+				char msgfName[50];
+				int order = j + 1;
+				
+				recv(clientSocket, &id, sizeof(id), 0);
+				recv(clientSocket, msgfName, sizeof(msgfName), 0);
+				printf("%d .", order);
+				printf("%s \t", msgfName);
+				printf(" - %d\n",ntohl(id));   
 		}
 		printf( "-------------------------\n");
-	}
-	else if (num == 5){
-		uint32_t deleteID, cdeleteID;
-		printf( "Enter ID for deletion: ");
-		scanf("%d", &deleteID);
-		cdeleteID = htonl(deleteID);
-		send(clientSocket, &cdeleteID, sizeof(cdeleteID), 0);
-	}
-	else
-	{
-		printf("Input not valid. Please enter choice again...\n");
-		showMenu(clientSocket);
+		
+		printMenu();
+		}
+		else if (num == 5){
+			uint32_t deleteID, cdeleteID;
+			printf( "Enter ID for deletion: ");
+			scanf("%d", &deleteID);
+			cdeleteID = htonl(deleteID);
+			send(clientSocket, &cdeleteID, sizeof(cdeleteID), 0);
+			printMenu();
+		}
+		else	{
+			printf("Input not valid. Please enter choice again...\n");
+			printMenu();
+		}
+		
+		printf("Enter choice: ");
+		scanf("%d", &num);
+		cnum = htonl(num);
+		send(clientSocket, &cnum, sizeof(cnum), 0);
 	}
 	
 }
