@@ -89,18 +89,20 @@ void connectSocket(int newSocket){ 	// communication starts from here
 			
 			uint32_t searchScore;
 			recv(newSocket, &searchScore, sizeof(searchScore), 0);
-			printf("SearchScore received: %d\n",ntohl(searchScore)); 
-			printf("Size : %d ", i);
+			
 			int j; //for loop run
-			/*
+			char msgScore[100];
+			strcpy(msgScore, "Student with score: ");
 			printf("Student with score: ");
 			for (j = 0; j < i; j++){
 				if (stuData[j].score == ntohl(searchScore))	{
-					printf(" %s  ", stuData[j].fName);
+					//printf(" %s  ", stuData[j].fName);
+					strcat(msgScore, stuData[j].fName);
+					strcat(msgScore, " ");
 				}
 			}
-			*/
-			printf("\n");
+			send(newSocket, msgScore, sizeof(msgScore), 0);
+			//printf("\n");
 			//printf(msg);
 			//send(newSocket, msg, sizeof(msg), 0);
 			

@@ -81,6 +81,9 @@ void showMenu(int clientSocket){
 			csearchID = htonl(searchID);
 			send(clientSocket, &csearchID, sizeof(csearchID), 0);
 			
+			char msgScore[100];
+			recv(clientSocket, msgScore, sizeof(msgScore), 0);
+			printf("%s\n", msgScore);
 			/*char msg[400];
 			recv(clientSocket, msg, sizeof(msg), 0);
 			printf(msg);*/
