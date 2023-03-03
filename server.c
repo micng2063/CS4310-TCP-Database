@@ -4,6 +4,8 @@
 #include <netinet/in.h>
 #include <string.h>
 void whileLoop (int newSocket){
+	uint32_t num;
+	char msg[30];
 	recv(newSocket, &num, sizeof(num), 0);
 	printf("Integer received: %d\n",ntohl(num));   
 	
@@ -18,8 +20,6 @@ int main(int argc, char **argv){
 	struct sockaddr_storage serverStorage;
 	socklen_t addr_size;
 	unsigned short port; 
-	uint32_t num;
-	char msg[30];
 	welcomeSocket = socket(PF_INET, SOCK_STREAM, 0);
 	serverAddr.sin_family = AF_INET;
 	port = (unsigned short) atoi(argv[1]);

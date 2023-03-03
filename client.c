@@ -4,6 +4,8 @@
 #include <string.h>
 #include <netdb.h>
 void whileLoop(int clientSocket){
+	uint32_t num, cnum;
+	char msg[30];
 	printf("Enter an integer: ");
 	scanf("%d", &num);
 	
@@ -20,8 +22,6 @@ int main(int argc, char **argv){
 	socklen_t addr_size;
 	unsigned short port;
 	struct hostent *hostnm;
-	uint32_t num, cnum;
-	char msg[30];
 	clientSocket = socket(PF_INET, SOCK_STREAM, 0);
 	
 	serverAddr.sin_family = AF_INET;
