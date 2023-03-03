@@ -55,7 +55,7 @@ void showMenu(int clientSocket){
 			
 			printf( "Enter student score: ");
 			scanf("%d", &score);
-			cScore = htonl(cScore); // "host to network long" convert values from host byte order to network byte order
+			cScore = htonl(score); // "host to network long" convert values from host byte order to network byte order
 			send(clientSocket, &cScore, sizeof(cScore), 0);
 			
 			printf( "-------------------------\n");
@@ -117,15 +117,17 @@ void showMenu(int clientSocket){
 			printf( "-------------------------\n");
 			int j;
 			for (j = 0; j < ntohl(size); j++){
-				uint32_t id;
+				uint32_t id, score;
 				char msgfName[50];
 				int order = j + 1;
 				
 				recv(clientSocket, &id, sizeof(id), 0);
 				recv(clientSocket, msgfName, sizeof(msgfName), 0);
+				recv(clientSocket, &score, sizeof(score), 0);
 				printf("%d .", order);
 				printf("%s \t", msgfName);
-				printf(" - %d\n",ntohl(id));   
+				printf(" - %d \t",ntohl(id));   
+				printf(" - %d\n",ntohl(score));  
 		}
 		printf( "-------------------------\n");
 		

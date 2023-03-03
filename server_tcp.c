@@ -27,21 +27,10 @@ void connectSocket(int newSocket){ 	// communication starts from here
 	
 	send(newSocket, msg, sizeof(msg), 0);
 	
-	struct student stuData[20];
-	int i = 0;
-	
-	strcpy(stuData[0].fName, "Michelle");	
-	stuData[0].id = 123;
-	stuData[0].score = 90;
-	i++;
-	strcpy(stuData[1].fName, "Mitchel");
-	stuData[1].id = 133;
-	stuData[1].score = 90;
-	i++;
-	strcpy(stuData[2].fName, "Michael");
-	stuData[2].id = 143;
-	stuData[2].score = 90;
-	i++;
+	struct student stuData[20] = {{ 123 , "Michelle" , 90 } , 
+								{ 123 , "Michael" , 90 } ,   
+								{ 123 , "Mitchell" , 89 }};
+	int i = 3; // size
 	
 	while (ntohl(num) != 6){
 		if (ntohl(num) == 1){
@@ -56,6 +45,7 @@ void connectSocket(int newSocket){ 	// communication starts from here
 			stuData[i].id = ntohl(numID); // if not set ntohl, num = address
 			strcpy(stuData[i].fName, fName);
 			stuData[i].score = ntohl(score); 
+			printf("%d, \n", stuData[i].score);
 			i++;
 			
 		}	
@@ -130,14 +120,18 @@ void connectSocket(int newSocket){ 	// communication starts from here
 		
 			for (j = 0; j < i; j++){
 				uint32_t id, cID;
+				uint32_t score, cScore;
 				char msgfName[50];
 				
 				strcpy(msgfName, stuData[j].fName);
 				id = stuData[j].id;
 				cID = htonl(id); 
+				score = stuData[j].score;
+				cScore = htonl(score);
 				
 				send(newSocket, &cID, sizeof(cID), 0);
 				send(newSocket, msgfName, sizeof(msgfName), 0);
+				send(newSocket, &cScore, sizeof(cScore), 0);
 			}
 		}
 		else if (ntohl(num) == 5){
