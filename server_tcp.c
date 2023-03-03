@@ -8,6 +8,7 @@
 struct student {
    int id;
    char fName[20];
+   int score;
 };
 
 void connectSocket(int newSocket){ 	// communication starts from here
@@ -31,38 +32,31 @@ void connectSocket(int newSocket){ 	// communication starts from here
 	
 	strcpy(stuData[0].fName, "Michelle");	
 	stuData[0].id = 123;
+	stuData[0].score = 90;
 	i++;
 	strcpy(stuData[1].fName, "Mitchel");
 	stuData[1].id = 133;
+	stuData[1].score = 90;
 	i++;
 	strcpy(stuData[2].fName, "Michael");
 	stuData[2].id = 143;
+	stuData[2].score = 90;
 	i++;
+	
 	while (ntohl(num) != 6){
 		if (ntohl(num) == 1){
 			uint32_t numID;
+			uint32_t score;
 			char fName[30];
 			
 			recv(newSocket, &numID, sizeof(numID), 0);
 			recv(newSocket, fName, sizeof(fName), 0);
+			recv(newSocket, &score, sizeof(score), 0);
 			
 			stuData[i].id = ntohl(numID); // if not set ntohl, num = address
 			strcpy(stuData[i].fName, fName);
-			
-			char msgInsert[30];
-			
-			strcpy(msgInsert, "Student registered.");
-			send(newSocket, msgInsert, sizeof(msgInsert), 0);
-			
+			stuData[i].score = ntohl(score); 
 			i++;
-			
-			int j;
-			for (j = 0; j < i; j++){
-				printf("%d .", (j+1));
-				printf("Name: %s \t", stuData[j].fName);
-				printf("ID: %d \t", stuData[j].id);
-				printf("\n");
-			}
 			
 		}	
 		else if (ntohl(num) == 2){
@@ -90,6 +84,39 @@ void connectSocket(int newSocket){ 	// communication starts from here
 			
 			send(newSocket, msgSearch, sizeof(msgSearch), 0);
 				
+		}
+		else if (ntohl(num) == 3){
+			
+			uint32_t searchScore;
+			recv(newSocket, &searchScore, sizeof(searchScore), 0);
+			printf("SearchScore received: %d\n",ntohl(searchScore)); 
+			printf("Size : %d ", i);
+			int j; //for loop run
+			/*
+			printf("Student with score: ");
+			for (j = 0; j < i; j++){
+				if (stuData[j].score == ntohl(searchScore))	{
+					printf(" %s  ", stuData[j].fName);
+				}
+			}
+			*/
+			printf("\n");
+			//printf(msg);
+			//send(newSocket, msg, sizeof(msg), 0);
+			
+			/*
+			int j; //for loop run
+			for (j = 0; j < i; j++){
+				char msgScore[50];
+				if (stuData[j].score == ntohl(searchScore))	{
+					strcpy(msgScore,  stuData[j].fName);
+				}
+				else{
+					strcpy(msgScore, "");
+				}
+				send(newSocket, msgScore, sizeof(msgScore), 0);
+			}*/
+			
 		}
 		else if(ntohl(num) == 4){ // DISPLAY
 			int j;

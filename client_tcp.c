@@ -42,6 +42,7 @@ void showMenu(int clientSocket){
 	while (num != 6){
 		if(num == 1){
 			uint32_t numID, cID; // communication starts from here
+			uint32_t score, cScore;
 			char fName[30];
 			printf( "Enter student ID: ");
 			scanf("%d", &numID);
@@ -51,10 +52,12 @@ void showMenu(int clientSocket){
 			printf( "Enter student name: ");
 			scanf("%s", &fName);
 			send(clientSocket, fName, sizeof(fName), 0);
-				
-			char msgInsert[30];
-			recv(clientSocket, msgInsert, sizeof(msgInsert), 0);
-			printf("%s\n", msgInsert);
+			
+			printf( "Enter student score: ");
+			scanf("%d", &score);
+			cScore = htonl(cScore); // "host to network long" convert values from host byte order to network byte order
+			send(clientSocket, &cScore, sizeof(cScore), 0);
+			
 			printf( "-------------------------\n");
 			printMenu();
 		}
@@ -64,12 +67,45 @@ void showMenu(int clientSocket){
 			scanf("%d", &searchID);
 			csearchID = htonl(searchID);
 			send(clientSocket, &csearchID, sizeof(csearchID), 0);
-			
+			/*
 			char msgSearch[50];
 			recv(clientSocket, msgSearch, sizeof(msgSearch), 0);
 			printf("%s\n", msgSearch);
 			
-			printMenu();
+			printMenu();*/
+		}
+		else if (num == 3){
+			uint32_t searchID, csearchID;
+			printf( "Enter ID for searching: ");
+			scanf("%d", &searchID);
+			csearchID = htonl(searchID);
+			send(clientSocket, &csearchID, sizeof(csearchID), 0);
+			
+			/*char msg[400];
+			recv(clientSocket, msg, sizeof(msg), 0);
+			printf(msg);*/
+			
+			/*
+			char msgSearch[50];
+			recv(clientSocket, msgSearch, sizeof(msgSearch), 0);
+			printf("%s\n", msgSearch);
+			printMenu();*/
+			/*
+			
+			int j;
+			printf("Students with score %d: ", searchID );
+			for (j = 0; j < ntohl(size); j++){
+				char msgScore[50];
+				recv(clientSocket, msgScore, sizeof(msgScore), 0);
+				if (j == (ntohl(size)-1)){
+					printf(" %s.", msgScore);
+				}
+				else{
+					printf(" %s, ", msgScore);
+				}
+			}
+			*/
+			printf( "-------------------------\n");
 		}
 		else if (num == 4){
 			uint32_t size;
