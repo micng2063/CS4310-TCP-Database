@@ -25,28 +25,27 @@ void printMenu(){
 	printf( "5. Delete Entry\n");
 	printf( "6. Exit\n");
 	printf( "-------------------------\n");
-	printf( "Enter choice: ");
 }
 void showMenu(int clientSocket){
 	
-	printMenu();
-	
-	uint32_t num, cnum; // communication starts from here
+	uint32_t num, cnum; 
 	char msg[30];
+	
+	printMenu();
+	printf("Enter choice: ");
 	scanf("%d", &num);
 	cnum = htonl(num); 
 	send(clientSocket, &cnum, sizeof(cnum), 0);
 	
-	recv(clientSocket, msg, sizeof(msg), 0);
-	printf("%s\n", msg);
 	while (num != 6){
 		if(num == 1){
-			uint32_t numID, cID; // communication starts from here
+			uint32_t numID, cID;
 			uint32_t score, cScore;
 			char fName[30];
+			
 			printf( "Enter student ID: ");
 			scanf("%d", &numID);
-			cID = htonl(numID); // "host to network long" convert values from host byte order to network byte order
+			cID = htonl(numID);
 			send(clientSocket, &cID, sizeof(cID), 0);
 			
 			printf( "Enter student name: ");
@@ -55,11 +54,8 @@ void showMenu(int clientSocket){
 			
 			printf( "Enter student score: ");
 			scanf("%d", &score);
-			cScore = htonl(score); // "host to network long" convert values from host byte order to network byte order
+			cScore = htonl(score);
 			send(clientSocket, &cScore, sizeof(cScore), 0);
-			
-			printf( "-------------------------\n");
-			printMenu();
 		}
 		else if (num == 2){
 			uint32_t searchID, csearchID;
@@ -67,16 +63,14 @@ void showMenu(int clientSocket){
 			scanf("%d", &searchID);
 			csearchID = htonl(searchID);
 			send(clientSocket, &csearchID, sizeof(csearchID), 0);
-			/*
-			char msgSearch[50];
+			
+			char msgSearch[100];
 			recv(clientSocket, msgSearch, sizeof(msgSearch), 0);
 			printf("%s\n", msgSearch);
-			
-			printMenu();*/
 		}
 		else if (num == 3){
 			uint32_t searchID, csearchID;
-			printf( "Enter ID for searching: ");
+			printf( "Enter score for searching: ");
 			scanf("%d", &searchID);
 			csearchID = htonl(searchID);
 			send(clientSocket, &csearchID, sizeof(csearchID), 0);
@@ -84,37 +78,10 @@ void showMenu(int clientSocket){
 			char msgScore[100];
 			recv(clientSocket, msgScore, sizeof(msgScore), 0);
 			printf("%s\n", msgScore);
-			/*char msg[400];
-			recv(clientSocket, msg, sizeof(msg), 0);
-			printf(msg);*/
-			
-			/*
-			char msgSearch[50];
-			recv(clientSocket, msgSearch, sizeof(msgSearch), 0);
-			printf("%s\n", msgSearch);
-			printMenu();*/
-			/*
-			
-			int j;
-			printf("Students with score %d: ", searchID );
-			for (j = 0; j < ntohl(size); j++){
-				char msgScore[50];
-				recv(clientSocket, msgScore, sizeof(msgScore), 0);
-				if (j == (ntohl(size)-1)){
-					printf(" %s.", msgScore);
-				}
-				else{
-					printf(" %s, ", msgScore);
-				}
-			}
-			*/
-			printf( "-------------------------\n");
 		}
 		else if (num == 4){
 			uint32_t size;
-			recv(clientSocket, &size, sizeof(size), 0);
-			//printf("Size received: %d\n",ntohl(size));   
-			printf( "-------------------------\n");
+			recv(clientSocket, &size, sizeof(size), 0);  
 			int j;
 			for (j = 0; j < ntohl(size); j++){
 				uint32_t id, score;
@@ -128,10 +95,7 @@ void showMenu(int clientSocket){
 				printf("%s \t", msgfName);
 				printf(" - %d \t",ntohl(id));   
 				printf(" - %d\n",ntohl(score));  
-		}
-		printf( "-------------------------\n");
-		
-		printMenu();
+			}
 		}
 		else if (num == 5){
 			uint32_t deleteID, cdeleteID;
@@ -139,13 +103,9 @@ void showMenu(int clientSocket){
 			scanf("%d", &deleteID);
 			cdeleteID = htonl(deleteID);
 			send(clientSocket, &cdeleteID, sizeof(cdeleteID), 0);
-			printMenu();
-		}
-		else	{
-			printf("Input not valid. Please enter choice again...\n");
-			printMenu();
-		}
-		
+		}		
+		printf("\n");
+		printMenu();
 		printf("Enter choice: ");
 		scanf("%d", &num);
 		cnum = htonl(num);
@@ -154,43 +114,6 @@ void showMenu(int clientSocket){
 	
 }
 
-void insertEntry(int clientSocket){
-	uint32_t numID, cID; // communication starts from here
-	char fName[30];
-	printf( "Enter student ID: ");
-	scanf("%d", &numID);
-	cID = htonl(numID); // "host to network long" convert values from host byte order to network byte order
-	send(clientSocket, &cID, sizeof(cID), 0);
-	
-	printf( "Enter student name: ");
-	scanf("%s", &fName);
-	send(clientSocket, fName, sizeof(fName), 0);
-		
-	char msgInsert[30];
-	recv(clientSocket, msgInsert, sizeof(msgInsert), 0);
-	printf("%s\n", msgInsert);
-}
-
-void searchID(int clientSocket){
-	uint32_t searchID, csearchID;
-	printf( "Enter ID for searching: ");
-	scanf("%d", &searchID);
-	csearchID = htonl(searchID);
-	send(clientSocket, &csearchID, sizeof(csearchID), 0);
-	
-}
-
-void deleteID(int clientSocket){
-	uint32_t deleteID, cdeleteID;
-	printf( "Enter ID for deletion: ");
-	scanf("%d", &deleteID);
-	cdeleteID = htonl(deleteID);
-	send(clientSocket, &cdeleteID, sizeof(cdeleteID), 0);
-}
-
-void display(int clientSocket){
-	printf("Displaying database...\n");
-}
 
 int main(int argc, char **argv){
   int clientSocket;

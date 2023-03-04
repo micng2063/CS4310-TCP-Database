@@ -1,19 +1,9 @@
 cd D:\CS4310
 scp client_tcp.c server_tcp.c rnb90@zeus.cs.txstate.edu:~\
 cocoMich2022@33
-ssh rnb90@zeus.cs.txstate.edu
 ssh rnb90@eros.cs.txstate.edu
-gcc -o s server.c
-./s 8000
-gcc -o c client.c
-./c eros.cs.txstate.edu 8000
-
-
-cd D:\CS4310
-scp client_tcp.c server_tcp.c rnb90@zeus.cs.txstate.edu:~\
-cocoMich2022@33
 ssh rnb90@zeus.cs.txstate.edu
-ssh rnb90@eros.cs.txstate.edu
+rm c s server_tcp.c client_tcp.c
 gcc -o s server_tcp.c
 ./s 8000
 gcc -o c client_tcp.c

@@ -16,6 +16,7 @@ void connectSocket(int newSocket){ 	// communication starts from here
 	char msg[30];
 	
 	recv(newSocket, &num, sizeof(num), 0);
+	/*
 	printf("Choice received: %d\n",ntohl(num));   
 	
 	if (ntohl(num) == 1)	strcpy(msg, "Inserting entry...\n");
@@ -25,11 +26,11 @@ void connectSocket(int newSocket){ 	// communication starts from here
 	else if (ntohl(num) == 5) 	strcpy(msg, "Deleteing entry...\n");
 	else 	strcpy(msg, "Quitting... \n");
 	
-	send(newSocket, msg, sizeof(msg), 0);
+	send(newSocket, msg, sizeof(msg), 0);*/
 	
 	struct student stuData[20] = {{ 123 , "Michelle" , 90 } , 
-								{ 123 , "Michael" , 90 } ,   
-								{ 123 , "Mitchell" , 89 }};
+								{ 133 , "Michael" , 90 } ,   
+								{ 143 , "Mitchell" , 89 }};
 	int i = 3; // size
 	
 	while (ntohl(num) != 6){
@@ -45,7 +46,6 @@ void connectSocket(int newSocket){ 	// communication starts from here
 			stuData[i].id = ntohl(numID); // if not set ntohl, num = address
 			strcpy(stuData[i].fName, fName);
 			stuData[i].score = ntohl(score); 
-			printf("%d, \n", stuData[i].score);
 			i++;
 			
 		}	
@@ -80,41 +80,28 @@ void connectSocket(int newSocket){ 	// communication starts from here
 			uint32_t searchScore;
 			recv(newSocket, &searchScore, sizeof(searchScore), 0);
 			
-			int j; //for loop run
+			int j;
+			int k = 0;
 			char msgScore[100];
 			strcpy(msgScore, "Student with score: ");
-			printf("Student with score: ");
 			for (j = 0; j < i; j++){
 				if (stuData[j].score == ntohl(searchScore))	{
-					//printf(" %s  ", stuData[j].fName);
 					strcat(msgScore, stuData[j].fName);
 					strcat(msgScore, " ");
+					k++;
 				}
 			}
+			if (k == 0){
+				strcpy(msgScore, "Score not found.");
+			}
 			send(newSocket, msgScore, sizeof(msgScore), 0);
-			//printf("\n");
-			//printf(msg);
-			//send(newSocket, msg, sizeof(msg), 0);
-			
-			/*
-			int j; //for loop run
-			for (j = 0; j < i; j++){
-				char msgScore[50];
-				if (stuData[j].score == ntohl(searchScore))	{
-					strcpy(msgScore,  stuData[j].fName);
-				}
-				else{
-					strcpy(msgScore, "");
-				}
-				send(newSocket, msgScore, sizeof(msgScore), 0);
-			}*/
 			
 		}
-		else if(ntohl(num) == 4){ // DISPLAY
+		else if(ntohl(num) == 4){
 			int j;
 			
 			uint32_t size, cSize;
-			size = i; // size = 3 printf("%d \n", size);
+			size = i;
 			cSize = htonl(size); 
 			send(newSocket, &cSize, sizeof(cSize), 0);
 		
@@ -137,10 +124,9 @@ void connectSocket(int newSocket){ 	// communication starts from here
 		else if (ntohl(num) == 5){
 			uint32_t deleteID;
 			recv(newSocket, &deleteID, sizeof(deleteID), 0);
-			printf("SearchID received: %d\n",ntohl(deleteID)); 
-			bool foundID = false; // search ID for deletion
+			bool foundID = false;
 			
-			int j; // SEARCH ID
+			int j;
 			int k;
 			for (j = 0; j < i; j++){
 				if (stuData[j].id == ntohl(deleteID))
@@ -149,7 +135,6 @@ void connectSocket(int newSocket){ 	// communication starts from here
 					break;
 				}
 			}
-			
 			if (foundID == true){
 				for (k = j; k < i; k++){
 					char fNameT[30];
@@ -164,10 +149,8 @@ void connectSocket(int newSocket){ 	// communication starts from here
 		}
 		
 		recv(newSocket, &num, sizeof(num), 0);
-		printf("Choice received: %d\n",ntohl(num));
 	}
 		
-	
 }
 
 int main(int argc, char **argv){
