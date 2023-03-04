@@ -8,29 +8,19 @@
 struct student {
    int id;
    char fName[20];
+   char lName[20];
    int score;
 };
 
-void connectSocket(int newSocket){ 	// communication starts from here
+void connectSocket(int newSocket){
 	uint32_t num;
 	char msg[30];
 	
 	recv(newSocket, &num, sizeof(num), 0);
-	/*
-	printf("Choice received: %d\n",ntohl(num));   
 	
-	if (ntohl(num) == 1)	strcpy(msg, "Inserting entry...\n");
-	else if (ntohl(num) == 2) 	strcpy(msg, "Searching by ID...\n");
-	else if (ntohl(num) == 3) 	strcpy(msg, "Searching by score...\n");
-	else if (ntohl(num) == 4) 	strcpy(msg, "Displaying student database...\n");
-	else if (ntohl(num) == 5) 	strcpy(msg, "Deleteing entry...\n");
-	else 	strcpy(msg, "Quitting... \n");
-	
-	send(newSocket, msg, sizeof(msg), 0);*/
-	
-	struct student stuData[20] = {{ 123 , "Michelle" , 90 } , 
-								{ 133 , "Michael" , 90 } ,   
-								{ 143 , "Mitchell" , 89 }};
+	struct student stuData[20] = {	{ 123 , "Michelle" , "McMichelle", 90 } , 
+								{ 133 , "Michael" , "McMichael", 90 } ,   
+								{ 143 , "Mitchell" , "McMitchel", 89 }	};
 	int i = 3; // size
 	
 	while (ntohl(num) != 6){
@@ -38,13 +28,16 @@ void connectSocket(int newSocket){ 	// communication starts from here
 			uint32_t numID;
 			uint32_t score;
 			char fName[30];
+			char lName[30];
 			
 			recv(newSocket, &numID, sizeof(numID), 0);
 			recv(newSocket, fName, sizeof(fName), 0);
+			recv(newSocket, lName, sizeof(lName), 0);
 			recv(newSocket, &score, sizeof(score), 0);
 			
 			stuData[i].id = ntohl(numID); // if not set ntohl, num = address
 			strcpy(stuData[i].fName, fName);
+			strcpy(stuData[i].lName, lName);
 			stuData[i].score = ntohl(score); 
 			i++;
 			
@@ -52,11 +45,10 @@ void connectSocket(int newSocket){ 	// communication starts from here
 		else if (ntohl(num) == 2){
 			uint32_t searchID;
 			recv(newSocket, &searchID, sizeof(searchID), 0);
-			printf("SearchID received: %d\n",ntohl(searchID)); 
 			bool foundID = false;
 			
 			char msgSearch[50];
-			int j; // SEARCH ID
+			int j; 
 			for (j = 0; j < i; j++){
 				if (stuData[j].id == ntohl(searchID))
 				{
@@ -66,10 +58,12 @@ void connectSocket(int newSocket){ 	// communication starts from here
 			}
 			if (foundID == true){
 				strcpy(msgSearch, stuData[j].fName);
-				strcat(msgSearch, " is found with the matching ID.\n");
+				strcat(msgSearch, " ");
+				strcat(msgSearch, stuData[j].lName);
+				strcat(msgSearch, " is found with the matching ID.");
 			}
 			else{
-				strcpy(msgSearch, "ID not found in database.\n");
+				strcpy(msgSearch, "ID cannot be found in database.");
 			}
 			
 			send(newSocket, msgSearch, sizeof(msgSearch), 0);
@@ -83,16 +77,17 @@ void connectSocket(int newSocket){ 	// communication starts from here
 			int j;
 			int k = 0;
 			char msgScore[100];
-			strcpy(msgScore, "Student with score: ");
+			strcpy(msgScore, "Student with this score: ");
 			for (j = 0; j < i; j++){
 				if (stuData[j].score == ntohl(searchScore))	{
 					strcat(msgScore, stuData[j].fName);
-					strcat(msgScore, " ");
-					k++;
+					strcat(msgScore, stuData[j].lName);
+					strcat(msgScore, "\t");
+					k++; 
 				}
 			}
 			if (k == 0){
-				strcpy(msgScore, "Score not found.");
+				strcpy(msgScore, "No students with this score can be found.");
 			}
 			send(newSocket, msgScore, sizeof(msgScore), 0);
 			
@@ -109,8 +104,10 @@ void connectSocket(int newSocket){ 	// communication starts from here
 				uint32_t id, cID;
 				uint32_t score, cScore;
 				char msgfName[50];
+				char msglName[50];
 				
 				strcpy(msgfName, stuData[j].fName);
+				strcpy(msglName, stuData[j].lName);
 				id = stuData[j].id;
 				cID = htonl(id); 
 				score = stuData[j].score;
@@ -118,6 +115,7 @@ void connectSocket(int newSocket){ 	// communication starts from here
 				
 				send(newSocket, &cID, sizeof(cID), 0);
 				send(newSocket, msgfName, sizeof(msgfName), 0);
+				send(newSocket, msgfName, sizeof(msglName), 0);
 				send(newSocket, &cScore, sizeof(cScore), 0);
 			}
 		}
@@ -140,12 +138,12 @@ void connectSocket(int newSocket){ 	// communication starts from here
 					char fNameT[30];
 					
 					stuData[k].id = stuData[k+1].id;
+					stuData[k].score = stuData[k+1].score;
 					strcpy(stuData[k].fName, stuData[k+1].fName );
+					strcpy(stuData[k].lName, stuData[k+1].lName );
 				}
 				i--;
 			}
-			else
-				printf("ID not found in database.\n");
 		}
 		
 		recv(newSocket, &num, sizeof(num), 0);

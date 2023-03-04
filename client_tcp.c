@@ -42,15 +42,20 @@ void showMenu(int clientSocket){
 			uint32_t numID, cID;
 			uint32_t score, cScore;
 			char fName[30];
+			char lName[30];
 			
 			printf( "Enter student ID: ");
 			scanf("%d", &numID);
 			cID = htonl(numID);
 			send(clientSocket, &cID, sizeof(cID), 0);
 			
-			printf( "Enter student name: ");
+			printf( "Enter student's first name: ");
 			scanf("%s", &fName);
 			send(clientSocket, fName, sizeof(fName), 0);
+			
+			printf( "Enter student's last name: ");
+			scanf("%s", &lName);
+			send(clientSocket, lName, sizeof(lName), 0);
 			
 			printf( "Enter student score: ");
 			scanf("%d", &score);
@@ -84,17 +89,21 @@ void showMenu(int clientSocket){
 			recv(clientSocket, &size, sizeof(size), 0);  
 			int j;
 			for (j = 0; j < ntohl(size); j++){
-				uint32_t id, score;
+				uint32_t id; 
+				uint32_t score;
 				char msgfName[50];
+				char msglName[50];
 				int order = j + 1;
 				
 				recv(clientSocket, &id, sizeof(id), 0);
 				recv(clientSocket, msgfName, sizeof(msgfName), 0);
+				recv(clientSocket, msglName, sizeof(msglName), 0);
 				recv(clientSocket, &score, sizeof(score), 0);
 				printf("%d .", order);
-				printf("%s \t", msgfName);
-				printf(" - %d \t",ntohl(id));   
-				printf(" - %d\n",ntohl(score));  
+				printf("%s ", msgfName);
+				printf("%s \t", msglName);
+				printf(" - %d\t", ntohl(id));   
+				printf(" - %d\n", ntohl(score));   // new data send as address
 			}
 		}
 		else if (num == 5){
