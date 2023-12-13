@@ -1,16 +1,10 @@
-cd D:\CS4310
-scp client_tcp.c server_tcp.c rnb90@zeus.cs.txstate.edu:~\
-cocoMich2022@33
-ssh rnb90@eros.cs.txstate.edu
-ssh rnb90@zeus.cs.txstate.edu
-rm c s server_tcp.c client_tcp.c
-gcc -o s server_tcp.c
-./s 8000
-gcc -o c client_tcp.c
-./c eros.cs.txstate.edu 8000
+/*************** Starting **************************/
+/*
+open terminal and change directory to repo's folder
+scp client_tcp.c server_tcp.c netid@zeus.cs.txstate.edu:~\
+*/
 
-
-/***************Server program**************************/
+/*************** Server program **************************/
 
 /* server_tcp.c is on eros.cs.txstate.edu
    open a window on eros.
@@ -19,7 +13,7 @@ gcc -o c client_tcp.c
    $./s 8000
 */
 
-/****************Client program********************************/
+/**************** Client program ********************************/
 
 /* client_tcp.c is on zeus.cs.txstate.edu
    open a window on zeus.
